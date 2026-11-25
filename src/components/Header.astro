@@ -1,0 +1,57 @@
+---
+import Logo from './Logo.astro';
+const nav = [
+  { href: '/residencias', label: 'Residencias' },
+  { href: '/residencias/atico-lumen#recorrido', label: 'Recorrido virtual' },
+  { href: '/marca', label: 'La marca' },
+  { href: '/contacto', label: 'Contacto' },
+];
+---
+<header data-header data-menu="closed" transition:persist transition:name="site-header"
+  class="site-header fixed inset-x-0 top-0 z-50 text-papel">
+  <div class="wrap flex h-20 items-center justify-between gap-6">
+    <a href="/" class="relative z-10 text-[0.95rem]" aria-label="NÓMA, inicio">
+      <Logo />
+    </a>
+    <nav aria-label="Principal" class="hidden items-center gap-9 text-[0.95rem] lg:flex">
+      {nav.map((n) => (
+        <a href={n.href} data-nav class="link-line nav-link">{n.label}</a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-3">
+      <a href="/contacto#visita" class="btn btn--light hidden !min-h-11 !px-5 text-sm sm:inline-flex">Agendar visita</a>
+      <button type="button" data-menu-toggle aria-expanded="false" aria-controls="menu-movil" aria-label="Abrir menú"
+        class="menu-toggle relative z-10 grid h-11 w-11 place-items-center rounded-full lg:hidden">
+        <span class="menu-bar"></span><span class="menu-bar"></span>
+      </button>
+    </div>
+  </div>
+  <div id="menu-movil" data-menu-panel hidden class="fixed inset-0 bg-pizarra text-papel lg:hidden">
+    <nav aria-label="Menú móvil" class="wrap flex h-full flex-col justify-center gap-3 pt-20">
+      {[{ href: '/', label: 'Inicio' }, ...nav].map((n) => (
+        <div class="overflow-hidden"><a href={n.href} data-menu-item class="block font-display text-[clamp(2.6rem,12vw,4.5rem)] leading-[1.05]">{n.label}</a></div>
+      ))}
+      <div class="mt-10 overflow-hidden"><a data-menu-item href="/contacto#visita" class="btn btn--light">Agendar visita</a></div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    transition: transform 0.7s var(--ease-expo), background-color 0.5s, color 0.5s;
+  }
+  .site-header[data-hidden="true"] { transform: translateY(-100%); }
+  .site-header[data-scrolled="true"]:not([data-menu="open"]) {
+    background: color-mix(in oklab, var(--color-pizarra) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
+  .nav-link[aria-current="page"]::after { transform: scaleX(1); }
+  .menu-bar {
+    position: absolute; left: 50%; width: 22px; height: 1.5px; background: currentColor; translate: -50% 0;
+    transition: transform 0.5s var(--ease-door), top 0.5s var(--ease-door);
+  }
+  .menu-bar:first-child { top: 18px; }
+  .menu-bar:last-child { top: 25px; }
+  [data-menu="open"] .menu-bar:first-child { top: 21.5px; transform: rotate(45deg); }
+  [data-menu="open"] .menu-bar:last-child { top: 21.5px; transform: rotate(-45deg); }
+</style>

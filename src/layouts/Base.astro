@@ -1,0 +1,52 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource/italiana/400.css';
+import '@fontsource-variable/hanken-grotesk/index.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  theme?: 'light' | 'dark';
+}
+const {
+  title = 'NÓMA — Arquitectura para quedarse',
+  description = 'NÓMA selecciona residencias de arquitectura contemporánea en México. Recórrelas en línea antes de visitarlas.',
+  image,
+  theme = 'light',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="es" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1d2326" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {image && <meta property="og:image" content={image} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
+    </script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body class="bg-caliza text-pizarra">
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-pizarra focus:px-5 focus:py-3 focus:text-papel">Saltar al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/global.ts';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+---
+/**
+ * Logotipo NÓMA: el símbolo es la convención de planta para una puerta abatible
+ * (hoja + arco de giro) dentro del cuadrado de un muro. La entrada a una casa.
+ */
+interface Props { class?: string; symbolOnly?: boolean; title?: string }
+const { class: cls = '', symbolOnly = false, title = 'NÓMA' } = Astro.props;
+---
+<span class:list={['inline-flex items-center gap-3 leading-none', cls]}>
+  <svg viewBox="0 0 40 40" class="h-[1.6em] w-[1.6em] shrink-0" aria-hidden="true">
+    <path class="door-symbol logo-frame" d="M2 2H38V38H33" />
+    <path class="door-symbol logo-frame" d="M7 38H2V2" />
+    <path class="door-symbol logo-leaf" d="M7 38V12" />
+    <path class="door-symbol logo-arc" d="M7 12A26 26 0 0 1 33 38" stroke-dasharray="1.6 2.2" />
+  </svg>
+  {!symbolOnly && (
+    <span class="font-display text-[1.45em] tracking-[0.18em] translate-y-[0.06em]" aria-label={title}>NÓMA</span>
+  )}
+</span>

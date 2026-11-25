@@ -1,0 +1,31 @@
+---
+import Logo from './Logo.astro';
+const year = 2026;
+---
+<footer class="relative overflow-hidden bg-noche text-papel">
+  <div class="wrap grid gap-16 pb-10 pt-28 md:grid-cols-12">
+    <div class="md:col-span-7">
+      <p class="font-display text-[clamp(3rem,8vw,8.5rem)] leading-[0.88]">Arquitectura<br />para quedarse.</p>
+    </div>
+    <div class="grid content-end gap-10 text-[0.95rem] sm:grid-cols-2 md:col-span-5">
+      <nav aria-label="Pie de página" class="grid gap-2">
+        <a class="link-line w-fit" href="/residencias">Residencias</a>
+        <a class="link-line w-fit" href="/residencias/atico-lumen#recorrido">Recorrido virtual</a>
+        <a class="link-line w-fit" href="/marca">La marca</a>
+        <a class="link-line w-fit" href="/contacto">Contacto</a>
+      </nav>
+      <address class="grid gap-2 not-italic text-bruma">
+        <span>Campos Elíseos 204, Polanco</span>
+        <span>Ciudad de México</span>
+        <a class="link-line w-fit text-papel" href="mailto:visitas@noma.example">visitas@noma.example</a>
+      </address>
+    </div>
+  </div>
+  <div class="wrap flex flex-col gap-6 border-t border-white/10 py-8 text-sm text-bruma md:flex-row md:items-center md:justify-between">
+    <Logo class="text-papel" />
+    <p class="max-w-2xl">
+      Proyecto de portafolio de Johan Franco. NÓMA, sus residencias, precios y datos de contacto son ficticios.
+      Fotografías de Unsplash usadas como referencia visual. © {year}
+    </p>
+  </div>
+</footer>

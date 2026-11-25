@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import VisitForm from '../components/react/VisitForm';
+import ContactForm from '../components/react/ContactForm';
+import ContactChannels from '../components/react/ContactChannels';
+import { img } from '../lib/img';
+---
+<Base title="Contacto — NÓMA" description="Agenda una visita privada o escríbenos. Datos de demostración." theme="light">
+  <section class="wrap grid gap-12 pb-24 pt-36 md:pt-44 lg:grid-cols-12">
+    <h1 class="display-xl lg:col-span-8" data-reveal="lines">Hablemos de tu próxima casa.</h1>
+    <div class="self-end lg:col-span-4">
+      <p class="lede text-grafito">Recibimos en Campos Elíseos 204, Polanco, con cita previa. Todos los datos de esta página son ficticios.</p>
+    </div>
+  </section>
+
+  <section id="visita" class="scroll-mt-24 bg-papel py-24 lg:py-32" aria-labelledby="visita-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="visita-t" class="display-m" data-reveal="lines">Solicitar una visita</h2>
+        <p class="mt-6 max-w-[34ch] text-grafito">Elige residencia, día y horario. Las visitas son privadas y duran una hora.</p>
+        <div class="mt-10 hidden overflow-hidden lg:block" data-reveal="door">
+          <img src={img('1600607687920-4e2a09cf159d', 900, 1100)} alt="Comedor junto a una cancelería de piso a techo" loading="lazy" class="aspect-[4/5] w-full object-cover" />
+        </div>
+      </div>
+      <div class="lg:col-span-7 lg:col-start-6"><VisitForm client:visible /></div>
+    </div>
+  </section>
+
+  <section class="bg-pizarra py-24 text-papel lg:py-32" aria-labelledby="canales-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="canales-t" class="display-m" data-reveal="lines">Otros canales</h2>
+        <p class="mt-6 max-w-[34ch] text-bruma">Los botones muestran una demostración y no contactan a nadie.</p>
+      </div>
+      <div class="lg:col-span-7 lg:col-start-6"><ContactChannels client:visible /></div>
+    </div>
+  </section>
+
+  <section class="bg-caliza py-24 lg:py-32" aria-labelledby="mensaje-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="mensaje-t" class="display-m" data-reveal="lines">Escríbenos</h2>
+        <p class="mt-6 max-w-[34ch] text-grafito">Para vender una propiedad con NÓMA, prensa o cualquier otra consulta.</p>
+      </div>
+      <div class="lg:col-span-7 lg:col-start-6"><ContactForm client:visible /></div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,246 @@
+---
+import { img, srcset } from '../../lib/img';
+import { getProperty } from '../../data/properties';
+
+const slides = [
+  { slug: 'atico-lumen', photo: '1600573472550-8090b5e0745e', pos: '50% 55%' },
+  { slug: 'residencia-ambar', photo: '1600585153490-76fb20a32601', pos: '50% 60%' },
+  { slug: 'casa-duna', photo: '1600596542815-ffad4c1539a9', pos: '50% 65%' },
+].map((s) => ({ ...s, p: getProperty(s.slug)! }));
+---
+<section data-hero class="hero relative h-[100svh] min-h-[620px] overflow-hidden bg-noche text-papel" aria-label="Residencias destacadas">
+  <!-- Apertura: solo en la primera visita de la sesión -->
+  <div data-intro class="pointer-events-none fixed inset-0 z-[60] hidden place-items-center bg-noche text-laton-claro">
+    <svg viewBox="0 0 40 40" class="h-24 w-24" aria-hidden="true">
+      <path data-intro-line class="door-symbol" d="M2 2H38V38H33" />
+      <path data-intro-line class="door-symbol" d="M7 38H2V2" />
+      <path data-intro-line class="door-symbol" d="M7 38V12" />
+      <path data-intro-arc class="door-symbol" d="M7 12A26 26 0 0 1 33 38" stroke-dasharray="1.6 2.2" />
+    </svg>
+  </div>
+
+  <div data-hero-frame class="absolute inset-0 will-change-[clip-path]">
+    <div data-hero-depth class="absolute -inset-[3%]">
+      {slides.map((s, i) => (
+        <figure data-slide={i} class="hero-slide absolute inset-0 m-0" style={i === 0 ? '' : 'visibility:hidden'}>
+          <img
+            src={img(s.photo, 2000)}
+            srcset={srcset(s.photo, [800, 1280, 1800, 2400])}
+            sizes="106vw"
+            alt={s.p.cover.alt}
+            class="hero-img h-full w-full object-cover"
+            style={`object-position:${s.pos}`}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'auto'}
+            decoding="async"
+          />
+        </figure>
+      ))}
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,23,29,0.55)_0%,rgba(14,23,29,0.05)_35%,rgba(14,23,29,0.15)_60%,rgba(14,23,29,0.85)_100%)]"></div>
+
+    <!-- Capa de líneas de planta: una tercera profundidad que se mueve más que la foto -->
+    <svg data-hero-lines viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" class="pointer-events-none absolute inset-0 h-full w-full text-laton-claro/50" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path class="hl" pathLength="1" d="M620 90 H960 V420 H820" />
+        <path class="hl" pathLength="1" d="M780 420 H620 V90" />
+        <path class="hl" pathLength="1" d="M780 420 V380" />
+        <path class="hl" pathLength="1" d="M620 250 H760 V330" />
+        <path class="ha" d="M780 380 A40 40 0 0 1 820 420" stroke-dasharray="3 5" />
+      </g>
+      <g fill="currentColor" font-size="11" font-family="Hanken Grotesk Variable, sans-serif" letter-spacing="0.5">
+        <text x="632" y="112">Nivel 32</text>
+        <text x="632" y="272">+101.40 m</text>
+      </g>
+    </svg>
+  </div>
+
+  <div data-hero-copy class="wrap relative z-10 flex h-full flex-col justify-end pb-36 md:pb-40">
+    <h1 class="display-xl max-w-[11ch]" data-hero-title>Arquitectura para quedarse</h1>
+    <div class="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <p class="lede text-papel/85" data-hero-sub>
+        Seis residencias en México, elegidas por su arquitectura. Recórrelas en línea antes de visitarlas.
+      </p>
+      <div class="flex flex-wrap gap-3" data-hero-cta>
+        <a href="/residencias" class="btn btn--light">Explorar residencias</a>
+        <a href="/residencias/atico-lumen?recorrido=vestibulo" class="btn btn--ghost text-papel">Entrar al Ático Lumen</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Control de las diapositivas -->
+  <div class="absolute inset-x-0 bottom-0 z-10" data-hero-controls>
+    <div class="wrap flex items-end justify-between gap-6 pb-7">
+      <ol class="grid flex-1 grid-cols-3 gap-4 md:max-w-3xl" aria-label="Residencias en portada">
+        {slides.map((s, i) => (
+          <li>
+            <button type="button" data-goto={i} aria-current={i === 0 ? 'true' : 'false'}
+              class="hero-tab group grid w-full gap-2 pt-3 text-left text-sm text-papel/60 transition-colors hover:text-papel aria-[current=true]:text-papel">
+              <span class="relative block h-px w-full overflow-hidden bg-papel/25"><span data-progress class="absolute inset-0 origin-left scale-x-0 bg-papel"></span></span>
+              <span class="truncate">{s.p.name}<span class="hidden text-papel/50 sm:inline">, {s.p.district}</span></span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <button type="button" data-pause aria-pressed="false" class="grid h-11 w-11 shrink-0 place-items-center rounded-full ring-1 ring-papel/30 transition hover:ring-papel" aria-label="Pausar presentación">
+        <svg data-icon-pause viewBox="0 0 16 16" class="h-3.5 w-3.5" fill="currentColor" aria-hidden="true"><rect x="3" y="2" width="3" height="12"/><rect x="10" y="2" width="3" height="12"/></svg>
+        <svg data-icon-play viewBox="0 0 16 16" class="hidden h-3.5 w-3.5" fill="currentColor" aria-hidden="true"><path d="M4 2l10 6-10 6z"/></svg>
+      </button>
+    </div>
+  </div>
+  <a data-slide-link href={`/residencias/${slides[0].slug}`} class="link-line absolute right-[clamp(1.25rem,4vw,4rem)] top-28 z-10 hidden text-sm text-papel md:inline-flex">
+    <span data-slide-name>Ver {slides[0].p.name}</span>
+  </a>
+</section>
+
+<script>
+  import { gsap, SplitText, onPage, reducedMotion } from '../../lib/motion';
+
+  onPage(() => {
+    const hero = document.querySelector<HTMLElement>('[data-hero]');
+    if (!hero) return;
+    const reduce = reducedMotion();
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-slide]')];
+    const tabs = [...hero.querySelectorAll<HTMLButtonElement>('[data-goto]')];
+    const link = hero.querySelector<HTMLAnchorElement>('[data-slide-link]')!;
+    const linkName = hero.querySelector<HTMLElement>('[data-slide-name]')!;
+    const pauseBtn = hero.querySelector<HTMLButtonElement>('[data-pause]')!;
+    const names = ['Ático Lumen', 'Residencia Ámbar', 'Casa Duna'];
+    const slugs = ['atico-lumen', 'residencia-ambar', 'casa-duna'];
+    const DURATION = 7;
+    let current = 0;
+    let paused = reduce;
+    let progressTween: gsap.core.Tween | null = null;
+
+    const ctx = gsap.context(() => {
+      /* ── Apertura ── */
+      const intro = hero.querySelector<HTMLElement>('[data-intro]')!;
+      const firstVisit = !sessionStorage.getItem('noma-intro');
+      const title = hero.querySelector<HTMLElement>('[data-hero-title]')!;
+      const split = SplitText.create(title, { type: 'words,chars', mask: 'words' });
+      const entrance = gsap.timeline({ paused: true })
+        .from(split.chars, { yPercent: 110, stagger: 0.028, duration: 1.4, ease: 'expo.out' })
+        .from('[data-hero-sub], [data-hero-cta], [data-hero-controls], [data-slide-link]', { autoAlpha: 0, y: 24, stagger: 0.08, duration: 1.2 }, '-=1.0')
+        .from('[data-hero-lines] .hl', { strokeDashoffset: 1, duration: 2.4, stagger: 0.15, ease: 'power2.inOut' }, 0.2)
+        .from('[data-hero-lines] .ha', { autoAlpha: 0, duration: 1 }, 1.6)
+        .from('[data-hero-lines] text', { autoAlpha: 0, duration: 1 }, 1.4);
+
+      if (reduce) {
+        entrance.progress(1);
+      } else if (firstVisit) {
+        sessionStorage.setItem('noma-intro', '1');
+        intro.style.display = 'grid';
+        gsap.timeline()
+          .from(intro.querySelectorAll('[data-intro-line]'), { strokeDasharray: 120, strokeDashoffset: 120, duration: 0.9, stagger: 0.08, ease: 'power2.inOut' })
+          .from(intro.querySelector('[data-intro-arc]'), { autoAlpha: 0, rotation: -90, svgOrigin: '7 38', duration: 0.8, ease: 'power3.inOut' }, '-=0.3')
+          .to(intro, { clipPath: 'circle(0% at 0% 100%)', duration: 1.1, ease: 'power4.inOut' }, '+=0.15')
+          .from('[data-hero-depth]', { scale: 1.18, duration: 2.4, ease: 'expo.out' }, '<')
+          .add(() => { entrance.play(); }, '-=0.6')
+          .set(intro, { display: 'none' });
+      } else {
+        gsap.from('[data-hero-depth]', { scale: 1.12, duration: 2.2, ease: 'expo.out' });
+        entrance.play();
+      }
+
+      /* ── Ken Burns de la diapositiva activa ── */
+      const kenBurns = (i: number) => {
+        const im = slides[i].querySelector('img');
+        if (!im || reduce) return;
+        gsap.fromTo(im, { scale: 1.12 }, { scale: 1.0, duration: DURATION + 2, ease: 'none', overwrite: true });
+      };
+      kenBurns(0);
+
+      const runProgress = (i: number) => {
+        progressTween?.kill();
+        tabs.forEach((t, k) => {
+          const bar = t.querySelector('[data-progress]')!;
+          gsap.set(bar, { scaleX: k < i ? 1 : 0 });
+        });
+        const bar = tabs[i].querySelector('[data-progress]')!;
+        if (paused) { gsap.set(bar, { scaleX: 1 }); return; }
+        progressTween = gsap.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: DURATION, ease: 'none', onComplete: () => go((current + 1) % slides.length) });
+      };
+
+      /* ── Cambio de diapositiva: la nueva se abre como una puerta ── */
+      const go = (i: number) => {
+        if (i === current) return;
+        const prev = slides[current];
+        const next = slides[i];
+        current = i;
+        tabs.forEach((t, k) => t.setAttribute('aria-current', String(k === i)));
+        link.href = `/residencias/${slugs[i]}`;
+        linkName.textContent = `Ver ${names[i]}`;
+        slides.forEach((s) => (s.style.zIndex = s === next ? '2' : s === prev ? '1' : '0'));
+        gsap.set(next, { visibility: 'visible' });
+        if (reduce) {
+          gsap.set(prev, { visibility: 'hidden' });
+        } else {
+          gsap.fromTo(next, { clipPath: 'circle(0% at 0% 100%)' }, {
+            clipPath: 'circle(142% at 0% 100%)', duration: 1.7, ease: 'power3.inOut',
+            onComplete: () => { gsap.set(prev, { visibility: 'hidden' }); gsap.set(next, { clearProps: 'clipPath' }); },
+          });
+          gsap.fromTo(prev.querySelector('img'), { xPercent: 0 }, { xPercent: 6, duration: 1.7, ease: 'power3.inOut', clearProps: 'xPercent' });
+          kenBurns(i);
+        }
+        runProgress(i);
+      };
+
+      tabs.forEach((t, k) => t.addEventListener('click', () => go(k)));
+      pauseBtn.addEventListener('click', () => {
+        paused = !paused;
+        pauseBtn.setAttribute('aria-pressed', String(paused));
+        pauseBtn.setAttribute('aria-label', paused ? 'Reanudar presentación' : 'Pausar presentación');
+        pauseBtn.querySelector('[data-icon-pause]')!.classList.toggle('hidden', paused);
+        pauseBtn.querySelector('[data-icon-play]')!.classList.toggle('hidden', !paused);
+        if (paused) progressTween?.pause(); else if (progressTween?.progress() === 1 || !progressTween) runProgress(current); else progressTween.resume();
+      });
+      if (reduce) {
+        pauseBtn.setAttribute('aria-pressed', 'true');
+        pauseBtn.querySelector('[data-icon-pause]')!.classList.add('hidden');
+        pauseBtn.querySelector('[data-icon-play]')!.classList.remove('hidden');
+      }
+      runProgress(0);
+
+      if (reduce) return;
+
+      /* ── Profundidad: la foto y las líneas responden al puntero a distinta escala ── */
+      const depth = hero.querySelector('[data-hero-depth]')!;
+      const lines = hero.querySelector('[data-hero-lines]')!;
+      const qx = gsap.quickTo(depth, 'x', { duration: 1.6, ease: 'expo.out' });
+      const qy = gsap.quickTo(depth, 'y', { duration: 1.6, ease: 'expo.out' });
+      const lx = gsap.quickTo(lines, 'x', { duration: 1.8, ease: 'expo.out' });
+      const ly = gsap.quickTo(lines, 'y', { duration: 1.8, ease: 'expo.out' });
+      const onMove = (e: PointerEvent) => {
+        if (e.pointerType !== 'mouse') return;
+        const nx = e.clientX / innerWidth - 0.5;
+        const ny = e.clientY / innerHeight - 0.5;
+        qx(nx * -22); qy(ny * -14); lx(nx * -56); ly(ny * -34);
+      };
+      hero.addEventListener('pointermove', onMove);
+
+      /* ── Scroll: el encuadre se cierra en una ventana y el texto se aleja ── */
+      gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } })
+        .to('[data-hero-frame]', { clipPath: 'inset(7% 5% 14% 5%)', ease: 'none' }, 0)
+        .to('[data-hero-copy]', { yPercent: -18, autoAlpha: 0, ease: 'none' }, 0)
+        .fromTo('[data-hero-controls], [data-slide-link]', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: 0.3, immediateRender: false }, 0)
+        .to(lines, { scale: 1.15, autoAlpha: 0, ease: 'none' }, 0);
+
+      // Pausa automática cuando el hero no está en pantalla
+      const io = new IntersectionObserver(([e]) => {
+        if (paused) return;
+        if (e.isIntersecting) progressTween?.resume(); else progressTween?.pause();
+      });
+      io.observe(hero);
+      return () => { io.disconnect(); hero.removeEventListener('pointermove', onMove); };
+    }, hero);
+
+    return () => { progressTween?.kill(); ctx.revert(); };
+  });
+</script>
+
+<style>
+  .hero-slide { will-change: clip-path; }
+  .hero-img { transform-origin: 50% 60%; }
+  [data-hero-frame] { clip-path: inset(0% 0% 0% 0%); }
+  .hl { stroke-dasharray: 1; }
+</style>

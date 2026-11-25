@@ -1,0 +1,199 @@
+---
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/react/Gallery';
+import VisitForm from '../../components/react/VisitForm';
+import PlanSVG from '../../components/react/PlanSVG';
+import LumenExperience from '../../components/react/LumenExperience';
+import { properties, formatPrice, formatMillions } from '../../data/properties';
+import { img, srcset } from '../../lib/img';
+
+export function getStaticPaths() {
+  return properties.map((p, i) => ({ params: { slug: p.slug }, props: { p, next: properties[(i + 1) % properties.length] } }));
+}
+const { p, next } = Astro.props;
+const facts = [
+  { k: 'Superficie interior', v: `${p.area} m²` },
+  { k: 'Terraza', v: `${p.terrace} m²` },
+  { k: 'Recámaras', v: String(p.bedrooms) },
+  { k: 'Baños', v: String(p.bathrooms) },
+  { k: 'Estacionamiento', v: `${p.parking} cajones` },
+  { k: 'Ubicación', v: p.level },
+];
+const [g1, g2] = p.gallery;
+---
+<Base title={`${p.name}, ${p.district} — NÓMA`} description={p.tagline} image={img(p.cover.id, 1200, 630)} theme="dark">
+  <!-- Portada: la imagen compartida llega desde el catálogo -->
+  <section data-detail-hero class="relative h-[100svh] min-h-[640px] overflow-hidden bg-noche text-papel">
+    <div class="absolute inset-0" style={`view-transition-name: prop-${p.slug}`}>
+      <img data-hero-img src={img(p.cover.id, 2000)} srcset={srcset(p.cover.id, [800, 1280, 1800, 2400])} sizes="100vw" alt={p.cover.alt} fetchpriority="high" class="h-full w-full object-cover" />
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,23,29,0.5)_0%,rgba(14,23,29,0)_30%,rgba(14,23,29,0.2)_55%,rgba(14,23,29,0.88)_100%)]"></div>
+    <div data-detail-copy class="wrap relative flex h-full flex-col justify-end pb-14">
+      <a href="/residencias" class="link-line mb-auto mt-28 w-fit text-sm text-papel/80">Todas las residencias</a>
+      <p class="label text-papel/75" data-detail-line>{p.type} en {p.district}, {p.city}</p>
+      <h1 class="display-xl mt-4 max-w-[12ch]" data-detail-title>{p.name}</h1>
+      <div class="mt-10 flex flex-col gap-6 border-t border-papel/20 pt-6 md:flex-row md:items-end md:justify-between" data-detail-line>
+        <p class="lede max-w-[38ch] text-papel/85">{p.tagline}</p>
+        <div class="text-right">
+          <p class="num font-display text-[clamp(2rem,3.4vw,3.2rem)] leading-none">{formatPrice(p.price)}</p>
+          <p class="mt-2 text-sm text-papel/70">Precio de lista. Proyecto ficticio de demostración.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Datos clave -->
+  <section class="bg-caliza" aria-label="Datos de la residencia">
+    <dl class="wrap num grid grid-cols-2 gap-x-6 gap-y-8 py-14 md:grid-cols-3 lg:grid-cols-6">
+      {facts.map((f) => (
+        <div class="border-t border-pizarra/20 pt-4">
+          <dt class="text-sm text-grafito/80">{f.k}</dt>
+          <dd class="mt-2 font-display text-[clamp(1.6rem,2.3vw,2.2rem)] leading-none">{f.v}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Descripción editorial con parallax multicapa -->
+  <section class="relative overflow-hidden bg-caliza pb-28 pt-10 lg:pb-44" aria-labelledby="desc-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <div class="lg:col-span-6">
+        <h2 id="desc-t" class="font-display text-[clamp(1.9rem,3vw,3.1rem)] leading-[1.1]" data-reveal="lines">{p.intro}</h2>
+        <div class="mt-12 grid max-w-[38em] gap-6 text-[1.05rem] leading-relaxed text-grafito md:ml-[16%]">
+          {p.story.map((t) => <p>{t}</p>)}
+          <p class="text-sm text-grafito/70">Proyecto arquitectónico: {p.architect}, {p.year}.</p>
+        </div>
+      </div>
+      <div class="relative min-h-[520px] lg:col-span-5 lg:col-start-8 lg:min-h-[780px]">
+        {g1 && (
+          <figure class="absolute right-0 top-0 m-0 w-[78%]" data-parallax="-0.12">
+            <div data-reveal="door" class="overflow-hidden bg-grafito">
+              <img src={img(g1.id, 1000)} srcset={srcset(g1.id, [500, 800, 1100], 0.78)} sizes="(min-width:1024px) 32vw, 70vw" alt={g1.alt} loading="lazy" class="aspect-[4/5] w-full object-cover" />
+            </div>
+            <figcaption class="mt-3 text-sm text-grafito/70">{g1.caption}</figcaption>
+          </figure>
+        )}
+        {g2 && (
+          <figure class="absolute bottom-0 left-0 m-0 w-[52%]" data-parallax="0.22">
+            <div data-reveal="door" class="overflow-hidden bg-grafito">
+              <img src={img(g2.id, 800)} srcset={srcset(g2.id, [400, 700, 900], 0.78)} sizes="(min-width:1024px) 22vw, 48vw" alt={g2.alt} loading="lazy" class="aspect-[4/5] w-full object-cover" />
+            </div>
+            <figcaption class="mt-3 text-sm text-grafito/70">{g2.caption}</figcaption>
+          </figure>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Recorrido y plano -->
+  {p.hasTour ? (
+    <section id="recorrido" class="scroll-mt-0 bg-noche py-28 text-papel lg:py-40" aria-labelledby="tour-t">
+      <div class="wrap">
+        <div class="mb-16 grid gap-8 lg:grid-cols-12">
+          <h2 id="tour-t" class="display-l lg:col-span-7" data-reveal="lines">Recorre el Ático Lumen.</h2>
+          <p class="lede self-end text-bruma lg:col-span-4 lg:col-start-9">
+            Entra por el elevador, gira la cámara, cambia de espacio desde el plano y compara la luz de las 17:40 con la de la noche.
+          </p>
+        </div>
+        <LumenExperience client:load />
+      </div>
+    </section>
+  ) : (
+    <section id="plano" class="bg-pizarra py-28 text-papel lg:py-40" aria-labelledby="plano-t">
+      <div class="wrap grid gap-16 lg:grid-cols-12">
+        <div class="lg:col-span-4">
+          <h2 id="plano-t" class="display-l" data-reveal="lines">Planta.</h2>
+          <p class="lede mt-8 text-bruma">Plano esquemático de la planta principal. Pasa el cursor o el foco por cada espacio para ver su descripción.</p>
+          <p class="mt-6 text-sm text-bruma/80">El recorrido virtual completo está disponible en el <a class="link-line text-papel" href="/residencias/atico-lumen#recorrido">Ático Lumen</a>.</p>
+        </div>
+        <div class="text-papel/80 lg:col-span-7 lg:col-start-6">
+          <PlanSVG client:visible rooms={p.plan.rooms} title={`Plano esquemático de ${p.name}`} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Galería horizontal -->
+  <section class="overflow-hidden bg-pizarra pb-28 pt-24 text-papel lg:pb-36" aria-labelledby="galeria-t">
+    <div class="wrap mb-12"><h2 id="galeria-t" class="display-l" data-reveal="lines">Galería</h2></div>
+    <Gallery client:visible photos={[p.cover, ...p.gallery]} name={p.name} />
+  </section>
+
+  <!-- Amenidades y acabados -->
+  <section class="bg-caliza py-28 lg:py-40" aria-label="Amenidades y acabados">
+    <div class="wrap grid gap-20 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <h2 class="display-m" data-reveal="lines">Amenidades</h2>
+        <ul class="mt-10 grid border-t border-pizarra/15">
+          {p.amenities.map((a) => <li class="border-b border-pizarra/15 py-4 text-[1.05rem]">{a}</li>)}
+        </ul>
+      </div>
+      <div class="lg:col-span-6 lg:col-start-7">
+        <h2 class="display-m" data-reveal="lines">Acabados</h2>
+        <ul class="mt-10 grid gap-3">
+          {p.finishes.map((f) => (
+            <li class="finish group grid grid-cols-[auto_1fr] items-start gap-5 rounded-[2px] bg-papel p-5 transition-colors duration-500 hover:bg-white">
+              <span class="finish-swatch mt-1 block h-14 w-14 shrink-0 transition-[border-radius] duration-700" style={`background:${f.swatch}`} aria-hidden="true"></span>
+              <span>
+                <span class="block font-display text-2xl leading-tight">{f.name}</span>
+                <span class="mt-1 block text-grafito">{f.detail}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solicitud de visita -->
+  <section id="visita" class="bg-papel py-28 lg:py-40" aria-labelledby="visita-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <h2 id="visita-t" class="display-l" data-reveal="lines">Solicita una visita.</h2>
+        <p class="lede mt-8 text-grafito">Un arquitecto de NÓMA te recibe en {p.name}. Visitas privadas de una hora, de lunes a sábado.</p>
+      </div>
+      <div class="lg:col-span-7 lg:col-start-6">
+        <VisitForm client:visible defaultProperty={p.slug} />
+      </div>
+    </div>
+  </section>
+
+  <!-- Siguiente residencia -->
+  <a href={`/residencias/${next.slug}`} class="next group relative block overflow-hidden bg-noche text-papel" aria-label={`Siguiente residencia: ${next.name}`}>
+    <div class="next-img absolute inset-0">
+      <img src={img(next.cover.id, 1800)} srcset={srcset(next.cover.id, [800, 1300, 1900])} sizes="100vw" alt="" loading="lazy" class="h-full w-full object-cover opacity-60 transition-[opacity,transform] duration-[1.4s] ease-[var(--ease-expo)] group-hover:scale-[1.03] group-hover:opacity-80" />
+    </div>
+    <div class="wrap relative flex min-h-[70svh] flex-col justify-end py-16">
+      <p class="label text-papel/75">Siguiente residencia</p>
+      <p class="display-xl mt-4">{next.name}</p>
+      <p class="mt-4 text-papel/80">{next.district}, {next.city}. {formatMillions(next.price)} de pesos.</p>
+    </div>
+  </a>
+</Base>
+
+<script>
+  import { gsap, SplitText, onPage, reducedMotion } from '../../lib/motion';
+  onPage(() => {
+    const hero = document.querySelector<HTMLElement>('[data-detail-hero]');
+    if (!hero) return;
+    const ctx = gsap.context(() => {
+      if (!reducedMotion()) {
+        const split = SplitText.create('[data-detail-title]', { type: 'words,chars', mask: 'words' });
+        gsap.timeline({ delay: 0.35 })
+          .from(split.chars, { yPercent: 115, stagger: 0.025, duration: 1.3, ease: 'expo.out' })
+          .from('[data-detail-line]', { autoAlpha: 0, y: 20, stagger: 0.1, duration: 1.1 }, '-=1.0');
+        gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } })
+          .to('[data-hero-img]', { scale: 1.12, yPercent: 8, ease: 'none' }, 0)
+          .to('[data-detail-copy]', { yPercent: -12, autoAlpha: 0.2, ease: 'none' }, 0);
+      }
+    }, hero);
+    if (location.hash === '#recorrido') {
+      requestAnimationFrame(() => (window as any).__lenis?.scrollTo('#recorrido', { immediate: true }));
+    }
+    return () => ctx.revert();
+  });
+</script>
+
+<style>
+  .finish:hover .finish-swatch { border-radius: 50%; }
+</style>

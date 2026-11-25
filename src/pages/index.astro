@@ -1,0 +1,265 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import PlanSVG from '../components/react/PlanSVG';
+import { properties, formatMillions } from '../data/properties';
+import { rooms as lumenRooms, walls, glassFront, planShapes } from '../data/lumen';
+import { img, srcset } from '../lib/img';
+
+const chapters = [
+  {
+    title: 'Medida',
+    photo: '1487958449943-2429e8be8625',
+    alt: 'Fachada blanca de geometría precisa contra el cielo',
+    text: 'NÓMA viene del griego nómos: la medida, el orden de las cosas. Empezamos en 2012 como un taller de arquitectos que asesoraba compras de vivienda. Seguimos midiendo igual: proporción, luz y orientación antes que metros cuadrados.',
+  },
+  {
+    title: 'Materia',
+    photo: '1600607688066-890987f18a86',
+    alt: 'Lavabo de piedra sobre mueble de madera',
+    text: 'Visitamos cuarenta propiedades por cada una que representamos. Revisamos de qué están hechas: la piedra, la madera, la cancelería y todo lo que no aparece en una fotografía.',
+  },
+  {
+    title: 'Tiempo',
+    photo: '1600585154340-be6161a56a0c',
+    alt: 'Casa contemporánea con jardín al anochecer',
+    text: 'Una casa se elige para quedarse. Por eso cada residencia puede recorrerse en línea, de día y de noche, antes de pedir una visita.',
+  },
+];
+const hotspotCount = lumenRooms.reduce((n, r) => n + r.hotspots.length, 0);
+const lumenPlanRooms = planShapes.map((s) => ({ id: s.id, name: s.name, rect: s.rect, note: '', outdoor: s.outdoor }));
+---
+<Base theme="dark">
+  <Hero />
+
+  <!-- Historia de marca: storytelling ligado al scroll -->
+  <section data-story class="relative bg-caliza" aria-labelledby="historia-t">
+    <div data-story-pin class="wrap grid min-h-[100svh] items-center gap-12 py-24 lg:grid-cols-12 lg:py-0">
+      <div class="lg:col-span-5 lg:col-start-1">
+        <h2 id="historia-t" class="label mb-10 font-sans text-base">La historia de NÓMA</h2>
+        <ol class="mb-10 flex gap-6 text-sm" aria-hidden="true">
+          {chapters.map((c, i) => (
+            <li data-story-tab={i} class="story-tab flex items-center gap-3 text-grafito/50 transition-colors duration-500">
+              <span class="story-tab-line h-px w-6 bg-current transition-all duration-700"></span>{c.title}
+            </li>
+          ))}
+        </ol>
+        <div class="story-texts grid">
+          {chapters.map((c, i) => (
+            <div data-story-text={i} class="story-text [grid-area:1/1]">
+              <p class="font-display text-[clamp(1.9rem,3.1vw,3.1rem)] leading-[1.08] text-pizarra" data-story-words>{c.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="relative lg:col-span-6 lg:col-start-7">
+        <div class="story-frame relative aspect-[4/5] w-full overflow-hidden bg-grafito lg:h-[76svh] lg:w-auto">
+          {chapters.map((c, i) => (
+            <figure data-story-img={i} class="absolute inset-0 m-0">
+              <img src={img(c.photo, 1200)} srcset={srcset(c.photo, [600, 900, 1300], 0.8)} sizes="(min-width:1024px) 45vw, 92vw" alt={c.alt} loading="lazy" class="h-full w-full object-cover" />
+            </figure>
+          ))}
+        </div>
+        <p class="mt-4 text-sm text-grafito/70" data-story-caption>Medida</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería horizontal de residencias -->
+  <section data-rail class="relative overflow-hidden bg-pizarra text-papel" aria-labelledby="rail-t">
+    <div data-rail-track class="no-scrollbar flex h-full snap-x snap-mandatory items-stretch gap-[4vw] overflow-x-auto px-[clamp(1.25rem,4vw,4rem)] py-24 lg:snap-none lg:overflow-visible lg:py-0 lg:pl-[clamp(1.25rem,4vw,4rem)] lg:pr-[12vw]">
+      <div class="flex w-[78vw] shrink-0 snap-start flex-col justify-center lg:h-[100svh] lg:w-[34vw]">
+        <h2 id="rail-t" class="display-l" data-reveal="lines">Seis residencias. Ninguna se parece a otra.</h2>
+        <p class="lede mt-8 text-bruma">Un penthouse sobre Polanco, una casa de madera quemada en el bosque, un loft industrial frente a la sierra. Desliza para recorrerlas.</p>
+      </div>
+      {properties.map((p, i) => (
+        <article class={`rail-item group relative flex w-[78vw] shrink-0 snap-start flex-col justify-center lg:h-[100svh] ${i % 2 ? 'lg:w-[34vw] lg:pt-[8svh]' : 'lg:w-[44vw] lg:pb-[12svh]'}`}>
+          <a href={`/residencias/${p.slug}`} class="block" aria-label={`${p.name}, ${p.district}, ${p.city}`}>
+            <div class={`relative overflow-hidden bg-grafito ${i % 2 ? 'aspect-[4/5]' : 'aspect-[16/11]'}`} style={`view-transition-name: prop-${p.slug}`}>
+              <img data-rail-img src={img(p.cover.id, 1400)} srcset={srcset(p.cover.id, [600, 1000, 1400, 1900])} sizes="(min-width:1024px) 44vw, 78vw" alt={p.cover.alt} loading="lazy" class="absolute inset-0 h-full w-[118%] max-w-none object-cover transition-[filter] duration-700 group-hover:brightness-110" />
+            </div>
+            <div class="mt-6 flex items-end justify-between gap-6">
+              <div>
+                <p class="label">{p.type} en {p.district}, {p.city}</p>
+                <h3 class="display-s mt-2">{p.name}</h3>
+              </div>
+              <p class="num shrink-0 text-right text-sm text-bruma">{p.area} m²<br />{formatMillions(p.price)} MXN</p>
+            </div>
+          </a>
+        </article>
+      ))}
+      <div class="flex w-[78vw] shrink-0 snap-start flex-col items-start justify-center gap-6 lg:h-[100svh] lg:w-[26vw]">
+        <p class="display-s max-w-[12ch]">Filtra por ciudad, precio o superficie.</p>
+        <a href="/residencias" class="btn btn--light">Abrir el explorador</a>
+      </div>
+    </div>
+    <div class="pointer-events-none absolute inset-x-0 bottom-5 hidden lg:block" aria-hidden="true">
+      <div class="wrap"><div class="h-px w-full bg-papel/15"><div data-rail-progress class="h-px origin-left scale-x-0 bg-laton"></div></div></div>
+    </div>
+  </section>
+
+  <!-- Recorrido Lumen -->
+  <section data-teaser class="relative overflow-hidden bg-noche py-28 text-papel lg:py-40" aria-labelledby="teaser-t">
+    <div class="wrap grid items-center gap-16 lg:grid-cols-12">
+      <div class="order-2 lg:order-1 lg:col-span-7">
+        <div class="text-laton-claro/80" data-teaser-plan>
+          <PlanSVG client:visible rooms={lumenPlanRooms} walls={walls} glassFront={glassFront} preview={false} title="Plano del Ático Lumen" />
+        </div>
+      </div>
+      <div class="order-1 lg:order-2 lg:col-span-4 lg:col-start-9">
+        <h2 id="teaser-t" class="display-l" data-reveal="lines">Entra antes de llegar.</h2>
+        <p class="lede mt-8 text-bruma">
+          El Ático Lumen tiene un recorrido virtual completo: siete espacios, cambio entre día y noche y {hotspotCount} puntos con información de materiales, mobiliario e iluminación.
+        </p>
+        <dl class="num mt-10 grid grid-cols-3 gap-6 border-t border-papel/15 pt-6">
+          <div><dt class="label">Espacios</dt><dd class="mt-1 font-display text-4xl">7</dd></div>
+          <div><dt class="label">Puntos de información</dt><dd class="mt-1 font-display text-4xl">{hotspotCount}</dd></div>
+          <div><dt class="label">Superficie</dt><dd class="mt-1 font-display text-4xl">418 m²</dd></div>
+        </dl>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="/residencias/atico-lumen?recorrido=vestibulo" class="btn btn--light">Iniciar recorrido</a>
+          <a href="/residencias/atico-lumen" class="btn btn--ghost">Ver la residencia</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo trabajamos: secuencia real -->
+  <section class="bg-caliza py-28 lg:py-40" aria-labelledby="proceso-t">
+    <div class="wrap grid gap-16 lg:grid-cols-12">
+      <h2 id="proceso-t" class="display-m lg:col-span-4" data-reveal="lines">De la pantalla a la llave.</h2>
+      <ol class="grid gap-12 md:grid-cols-3 lg:col-span-8">
+        {[
+          { t: 'Recorre en línea', d: 'Revisa planos, acabados y, en el Ático Lumen, el recorrido virtual completo. Sin registro.' },
+          { t: 'Visita privada', d: 'Un arquitecto de NÓMA te acompaña. Las visitas duran una hora y nunca coinciden con otras.' },
+          { t: 'Acompañamiento', d: 'Revisión técnica, avalúo y notaría con el mismo asesor hasta la entrega de llaves.' },
+        ].map((s, i) => (
+          <li class="border-t border-pizarra/20 pt-6">
+            <span class="num font-display text-5xl text-musgo">{i + 1}</span>
+            <h3 class="mt-6 font-sans text-xl font-medium tracking-normal">{s.t}</h3>
+            <p class="mt-3 max-w-[30ch] text-grafito">{s.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Llamado a visita -->
+  <section class="relative overflow-hidden bg-pizarra text-papel" aria-labelledby="cta-t">
+    <div class="absolute inset-0 opacity-50" aria-hidden="true">
+      <img data-parallax="0.25" src={img("1600585154526-990dced4db0d", 2000)} alt="" loading="lazy" class="absolute -top-[15%] left-0 h-[130%] w-full object-cover" />
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-r from-pizarra via-pizarra/80 to-transparent"></div>
+    <div class="wrap relative grid gap-10 py-32 lg:grid-cols-12 lg:py-44">
+      <div class="lg:col-span-7">
+        <h2 id="cta-t" class="display-l" data-reveal="lines">Agenda una visita privada.</h2>
+        <p class="lede mt-8 text-papel/80">Elige la residencia y el horario. Te confirmamos en menos de un día hábil.</p>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="/contacto#visita" class="btn btn--light">Solicitar visita</a>
+          <a href="/contacto" class="btn btn--ghost">Otros medios de contacto</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { gsap, ScrollTrigger, SplitText, onPage, reducedMotion } from '../lib/motion';
+
+  onPage(() => {
+    const story = document.querySelector<HTMLElement>('[data-story]');
+    const rail = document.querySelector<HTMLElement>('[data-rail]');
+    if (!story || !rail) return;
+    const mm = gsap.matchMedia();
+
+    mm.add({ desktop: '(min-width: 1024px)', mobile: '(max-width: 1023.98px)', reduce: '(prefers-reduced-motion: reduce)' }, (c) => {
+      const { desktop, reduce } = c.conditions as { desktop: boolean; reduce: boolean };
+      const texts = gsap.utils.toArray<HTMLElement>('[data-story-text]');
+      const imgs = gsap.utils.toArray<HTMLElement>('[data-story-img]');
+      const tabs = gsap.utils.toArray<HTMLElement>('[data-story-tab]');
+      const caption = story.querySelector<HTMLElement>('[data-story-caption]')!;
+      const titles = ['Medida', 'Materia', 'Tiempo'];
+      const setTab = (i: number) => {
+        tabs.forEach((t, k) => t.classList.toggle('is-active', k === i));
+        caption.textContent = titles[i];
+      };
+      setTab(0);
+
+      if (!desktop || reduce) {
+        // Sin pin: los capítulos se apilan y la imagen cambia por cercanía
+        gsap.set(texts, { gridArea: 'auto' });
+        texts.forEach((t, i) => { if (i > 0) t.classList.add('mt-10'); });
+        gsap.set(imgs.slice(1), { autoAlpha: 0 });
+        texts.forEach((t, i) => ScrollTrigger.create({
+          trigger: t, start: 'top 70%', end: 'bottom 30%',
+          onToggle: (s) => { if (s.isActive) { setTab(i); imgs.forEach((im, k) => gsap.to(im, { autoAlpha: k === i ? 1 : 0, duration: reduce ? 0 : 0.6 })); } },
+        }));
+        return () => texts.forEach((t) => t.classList.remove('mt-10'));
+      }
+
+      // Escritorio: sección fijada, las palabras se encienden con el scroll
+      const splits = texts.map((t) => SplitText.create(t.querySelector('[data-story-words]')!, { type: 'words' }));
+      gsap.set(texts.slice(1), { autoAlpha: 0 });
+      gsap.set(imgs.slice(1), { clipPath: 'circle(0% at 0% 100%)' });
+      splits.forEach((s) => gsap.set(s.words, { opacity: 0.16 }));
+
+      const marks = [0];
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: story, start: 'top top', end: '+=260%', pin: '[data-story-pin]', scrub: 0.6,
+          onUpdate: () => setTab(marks.filter((m) => tl.time() >= m).length - 1),
+        },
+      });
+      splits.forEach((s, i) => {
+        tl.to(s.words, { opacity: 1, stagger: 0.05, duration: 0.4, ease: 'none' });
+        if (i < splits.length - 1) {
+          tl.to(texts[i], { autoAlpha: 0, y: -40, duration: 0.45 }, '+=0.4')
+            .fromTo(texts[i + 1], { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.5 }, '>-0.05');
+          marks.push(tl.duration() - 0.5);
+          tl
+            .to(imgs[i + 1], { clipPath: 'circle(142% at 0% 100%)', duration: 1.1, ease: 'power2.inOut' }, '<-0.2')
+            .fromTo(imgs[i + 1].querySelector('img'), { scale: 1.3 }, { scale: 1, duration: 1.1, ease: 'power2.out' }, '<');
+        } else {
+          tl.to({}, { duration: 0.4 });
+        }
+      });
+      return () => splits.forEach((s) => s.revert());
+    });
+
+    // Galería horizontal fijada (solo escritorio y con movimiento)
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      const track = rail.querySelector<HTMLElement>('[data-rail-track]')!;
+      const distance = () => track.scrollWidth - window.innerWidth;
+      const move = gsap.to(track, {
+        x: () => -distance(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: rail, start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.8, invalidateOnRefresh: true,
+          onUpdate: (s) => gsap.set('[data-rail-progress]', { scaleX: s.progress }),
+        },
+      });
+      // Parallax de cada foto dentro de su marco, ligado al desplazamiento horizontal
+      gsap.utils.toArray<HTMLElement>('[data-rail-img]').forEach((im) => {
+        gsap.fromTo(im, { xPercent: -12 }, {
+          xPercent: 0, ease: 'none',
+          scrollTrigger: { trigger: im.parentElement, containerAnimation: move, start: 'left right', end: 'right left', scrub: true },
+        });
+      });
+    });
+
+    // Plano del Lumen: se dibuja al avanzar
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from('[data-teaser-plan]', {
+        rotateX: 38, y: 80, scale: 0.92, transformPerspective: 1600, transformOrigin: '50% 100%', ease: 'none',
+        scrollTrigger: { trigger: '[data-teaser]', start: 'top bottom', end: 'center center', scrub: true },
+      });
+    });
+
+    return () => mm.revert();
+  });
+</script>
+
+<style>
+  .story-tab.is-active { color: var(--color-pizarra); }
+  .story-tab.is-active .story-tab-line { width: 3rem; background: var(--color-laton); }
+</style>

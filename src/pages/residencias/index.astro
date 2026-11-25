@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import Explorer from '../../components/react/Explorer';
+---
+<Base title="Residencias — NÓMA" description="Explora las seis residencias de NÓMA por ubicación, precio, superficie, recámaras y tipo de propiedad." theme="light">
+  <section class="wrap pt-36 md:pt-44">
+    <div class="grid gap-8 pb-14 md:grid-cols-12">
+      <h1 class="display-xl md:col-span-8" data-reveal="lines">Residencias</h1>
+      <p class="lede self-end text-grafito md:col-span-4">
+        Seis propiedades en cinco ciudades. Filtra por lo que te importa; cada ficha incluye planos, acabados y galería.
+      </p>
+    </div>
+    <Explorer client:load />
+  </section>
+</Base>
